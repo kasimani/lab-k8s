@@ -7,15 +7,15 @@ To start setup:
 Step 1: create Downlaod the Ubuntu Qcow2 image on Ansible server under /tmp directory
 Step 2: run populate_variables.sh, /bin/sh populate_variables.sh
 Step 3: Run ansible script: 
-# mkdir /kubernetes-install
-# cd /kubernetes-install
-# git clone https://github.com/kasimani/lab-k8s.git
-# cd lab-k8s
-# /bin/sh populate_variables.sh
-# ansible-playbook src/playbook/kubernetesvm_deploy.yml
+[root@host2 lab-k8s]# mkdir /kubernetes-install
+[root@host2 lab-k8s]# cd /kubernetes-install
+[root@host2 lab-k8s]# git clone https://github.com/kasimani/lab-k8s.git
+[root@host2 lab-k8s]# cd lab-k8s
+[root@host2 lab-k8s]# /bin/sh populate_variables.sh
+[root@host2 lab-k8s]# ansible-playbook src/playbook/kubernetesvm_deploy.yml
 
 
 To destory setup:
-# ansible-playbook src/playbook/destroy_kubernetes.yml
+[root@host2 lab-k8s]# ansible-playbook src/playbook/destroy_kubernetes.yml
 
 
