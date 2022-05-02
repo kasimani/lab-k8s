@@ -8,7 +8,10 @@ Step 1: create Downlaod the Ubuntu Qcow2 image on Ansible server under /tmp dire
 
 Step 2: run populate_variables.sh, /bin/sh populate_variables.sh
 
-Step 3: Run ansible script: 
+Step 3: Run ansible script 
+
+All Steps:
+\# curl -o /tmp/master.qcow2 http://172.21.166.204/master.qcow2
 
 \# mkdir /kubernetes-install
 
