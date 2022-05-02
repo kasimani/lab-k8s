@@ -10,7 +10,7 @@
 
 - name: Create a temporary copy of the network script for eth0
   template:
-    src: ./src/roles/worker-deploy/templates/{{item}}_50-cloud-init.yaml
+    src: "{{ playbook_dir }}/../../src/roles/worker-deploy/templates/{{item}}_50-cloud-init.yaml"
     backup: no
     dest: "{{ images_path }}/{{ environmentname }}/{{item}}/50-cloud-init.yaml"
     force: no
