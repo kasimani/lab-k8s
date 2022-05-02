@@ -11,6 +11,7 @@ Step 2: run populate_variables.sh, /bin/sh populate_variables.sh
 Step 3: Run ansible script
 
 **Steps Summary:**
+
 ## mkdir /kubernetes-install
 
 ## cd /kubernetes-install
