@@ -1,0 +1,88 @@
+- name: Setting host facts
+  set_fact:
+    one_fact: "{{ lookup('file','/tmp/workervm.txt').splitlines() }}"
+
+- name: Create Kubernetes Worker Node VM directory
+  file:
+    dest: "{{ images_path }}/{{ environmentname }}/{{item}}"
+    state: directory
+  loop: "{{ one_fact }}"
+
+- name: Create a temporary copy of the network script for eth0
+  template:
+    src: ./src/roles/worker-deploy/templates/{{item}}_50-cloud-init.yaml
+    backup: no
+    dest: "{{ images_path }}/{{ environmentname }}/{{item}}/50-cloud-init.yaml"
+    force: no
+  loop: "{{ one_fact }}"
+
+- name: Copy Worker Ubuntu qcow2 file
+  copy:
+    src: /tmp/master.qcow2
+    dest: "{{ images_path }}/{{ environmentname }}/{{item}}/{{item}}.qcow2"
+    force: no
+  loop: "{{ one_fact }}"
+
+- name: Preserve hostname
+  shell: |
+         virt-customize -a "{{ images_path }}/{{ environmentname }}/{{item}}/{{item}}.qcow2"  --run-command "sed -i 's|preserve_hostname: false|preserve_hostname: true|g' /etc/cloud/cloud.cfg"
+  loop: "{{ one_fact }}"
+
+- name: Get list of partitions (ignoring Errors)
+  shell: "guestfish -r -a {{ images_path }}/{{ environmentname }}/{{item}}/{{item}}.qcow2 run : list-filesystems | grep -Ev '(unknown|swap)'"
+  loop: "{{ one_fact }}"
+  ignore_errors: yes
+  register: partitions_list
+  changed_when: False
+
+- name: Set Partition List Fact
+  set_fact: 
+    partitions_content: "{{partitions_list.results[0]}}"
+
+- name: set fact
+  set_fact:
+    extact: "{{ partitions_content.stdout.split(':')[0] }}"
+
+- debug:
+    var: extact
+
+- name: Check if the VM is already running, if running stop and undefine
+  shell: |
+          virsh destroy {{item}}
+          virsh undefine {{item}}
+  ignore_errors: yes
+  loop: "{{ one_fact }}"
+  no_log: true
+
+- name: Set Worker Hostname
+  shell: |
+         virt-customize -a "{{ images_path }}/{{ environmentname }}/{{item}}/{{item}}.qcow2" --hostname "{{ item | lower}}"
+  when: not ansible_check_mode
+  loop: "{{ one_fact }}"
+  ignore_errors: yes
+
+- name: Check partition content
+  command: "guestfish -r -a {{ images_path }}/{{ environmentname }}/{{item}}/{{item}}.qcow2 run : mount {{ extact }} / : ls /"
+  loop: "{{ one_fact }}"
+  register: partitions
+  changed_when: False
+
+- name: Copy eth0 file into the qcow image
+  command: "guestfish --rw -a {{ images_path }}/{{ environmentname }}/{{item}}/{{item}}.qcow2 -m {{ extact }} copy-in {{ images_path }}/{{ environmentname }}/{{item}}/50-cloud-init.yaml /etc/netplan/"
+  loop: "{{ one_fact }}"
+
+- name: Worker Node VM Deployment
+  shell: |
+          virt-install -q --connect qemu:///system -n "{{ item }}" -r 4096 --os-type=linux --os-variant=rhel7 --disk path={{ images_path }}/{{ environmentname }}/{{item}}/{{item}}.qcow2,device=disk,bus=virtio,format=qcow2 --vcpus=4 --graphics vnc,listen=0.0.0.0 -w bridge=br0  --noautoconsole --import
+  when: not ansible_check_mode
+  loop: "{{ one_fact }}"
+
+- name: Autostart
+  shell: |
+          virsh autostart {{item}}
+  when: not ansible_check_mode
+  loop: "{{ one_fact }}"
+
+- pause:
+    seconds: 20
+

@@ -1,0 +1,10 @@
+---
+- hosts: kvm
+  any_errors_fatal: true
+  gather_facts: no
+  roles:
+    - master-deploy
+    - worker-deploy
+
+- name: Install Kubernetes 
+  import_playbook: ../../kubernetes-deploy/deployment.yaml

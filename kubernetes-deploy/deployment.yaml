@@ -1,0 +1,11 @@
+- name: Create Users
+  import_playbook: users.yml
+
+- name: Install Kubernetes
+  import_playbook: install-k8s.yml
+
+- name: Configure Master Node
+  import_playbook: master.yml
+
+- name: Join Wokers Nodes
+  import_playbook: join-workers.yml

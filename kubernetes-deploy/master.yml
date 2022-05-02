@@ -1,0 +1,67 @@
+- hosts: masters
+  become: yes
+  tasks:
+    - name: Set Pod Network CIDR
+      set_fact: 
+        pod_network: 10.244.0.0/16
+
+    - name: Reset the cluster - If already created
+      shell: kubeadm init -f
+      ignore_errors: yes
+
+    - name: initialize the cluster
+      shell: kubeadm init --pod-network-cidr="{{pod_network}}"
+      args:
+        chdir: $HOME
+        creates: cluster_initialized.txt
+
+    - name: create .kube directory
+      become: yes
+      become_user: kube
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: 0755
+
+    - name: copies admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/kube/.kube/config
+        remote_src: yes
+        owner: kube
+
+    - name: Download Calico YAML
+      become: yes
+      become_user: kube
+      shell: curl -o /tmp/calico.yaml https://docs.projectcalico.org/manifests/calico.yaml
+      args:
+        chdir: $HOME
+
+    - name: Set Pod Network in Calico
+      become: yes
+      become_user: kube
+      shell: |
+             sed -i 's| *# - name: CALICO_IPV4POOL_CIDR|            - name: CALICO_IPV4POOL_CIDR|g' /tmp/calico.yaml
+             sed -i 's| *#   value: "192.168.0.0/16"|              value: \"{{ pod_network }}\"|g' /tmp/calico.yaml
+
+
+    - name: install Pod network
+      become: yes
+      become_user: kube
+      shell: kubectl apply -f /tmp/calico.yaml 
+      args:
+        chdir: $HOME
+        
+    - name: Get the token for joining the worker nodes
+      become: yes
+      become_user: kube
+      shell: kubeadm token create  --print-join-command
+      register: kubernetes_join_command
+
+    - debug:
+         msg: "{{ kubernetes_join_command.stdout }}"
+
+    - name: Copy join command to local file.
+      become: yes
+      local_action: copy content="{{ kubernetes_join_command.stdout_lines[0] }}" dest="/tmp/kubernetes_join_command" mode=0777
+

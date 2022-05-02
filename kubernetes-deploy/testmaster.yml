@@ -1,0 +1,23 @@
+- hosts: masters
+  become: yes
+  tasks:
+    - name: Set Pod Network CIDR
+      set_fact: 
+        pod_network: 10.244.0.0/16
+
+    - name: Download Calico YAML
+      become: yes
+      become_user: kube
+      shell: curl -o /tmp/calico.yaml https://docs.projectcalico.org/manifests/calico.yaml
+      args:
+        chdir: $HOME
+
+    - name: Set Pod Network in Calico
+      become: yes
+      become_user: kube
+      shell: |
+             sed -i 's| *# - name: CALICO_IPV4POOL_CIDR|            - name: CALICO_IPV4POOL_CIDR|g' /tmp/calico.yaml
+             sed -i 's| *#   value: "192.168.0.0/16"|              value: \"{{ pod_network }}\"|g' /tmp/calico.yaml
+      args:
+        chdir: $HOME
+

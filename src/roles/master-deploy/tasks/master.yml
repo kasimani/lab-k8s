@@ -1,0 +1,73 @@
+- name: Create Kubernetes Master VM directory
+  file:
+    path: "{{ images_path }}/{{ environmentname }}/{{ master_vm }}-{{ master_mgmt_ip }}"
+    state: directory
+  register: destdirectory
+
+- name: Create a temporary copy of the network script for eth0
+  template:
+    src: ./src/roles/master-deploy/templates/master_50-cloud-init.yaml
+    backup: no
+    dest: "{{ destdirectory.path }}/50-cloud-init.yaml"
+    force: no
+
+- name: Copy Master Ubuntu qcow2 file
+  copy:
+    src: /tmp/master.qcow2
+    dest: "{{ destdirectory.path }}/{{ master_vm }}.qcow2"
+    force: no
+
+- name: Preserve hostname
+  shell: |
+         virt-customize -a "{{ destdirectory.path }}/{{ master_vm }}.qcow2"  --run-command "sed -i 's|preserve_hostname: false|preserve_hostname: true|g' /etc/cloud/cloud.cfg"
+
+- name: Check if the VM is already running, if running stop and undefine
+  shell: |
+          virsh destroy "{{ environmentname }}-{{ master_vm }}-{{ master_mgmt_ip }}"
+          virsh undefine "{{ environmentname }}-{{ master_vm }}-{{ master_mgmt_ip }}"
+  ignore_errors: yes
+
+- name: Get list of partitions (ignoring Errors)
+  shell: "guestfish -r -a {{ destdirectory.path }}/{{ master_vm }}.qcow2 run : list-filesystems | grep -Ev '(unknown|swap)'"
+  ignore_errors: yes
+  register: partitions_list
+  changed_when: False
+
+- debug:
+    var: partitions_list
+
+- name: Set Master Hostname
+  shell: |
+          virt-customize -a "{{ destdirectory.path }}/{{ master_vm }}.qcow2" --hostname "{{ environmentname | lower }}-{{ master_vm | lower}}"
+  ignore_errors: yes
+
+- name: Check partition content
+  command: "guestfish -r -a {{ destdirectory.path }}/{{ master_vm }}.qcow2 run : mount {{ item.split(':')[0] }} / : ls /"
+  register: partitions
+  with_items: "{{ partitions_list.stdout_lines }}"
+  changed_when: False
+
+- name: Find root partition
+  set_fact:
+    guestfish_mount: "{{ item.item.split(':')[0] }}"
+  with_items: "{{ partitions.results }}"
+
+- name: Copy eth0 file into the qcow image
+  command: "guestfish --rw -a {{ destdirectory.path }}/{{ master_vm }}.qcow2 -m {{ guestfish_mount }} copy-in {{ destdirectory.path }}/50-cloud-init.yaml /etc/netplan/"
+  ignore_errors: yes
+
+- name: Master Node VM Deployment
+  shell: |
+          virt-install -q --connect qemu:///system -n "{{ master_vm }}_{{ environmentname }}_{{ master_mgmt_ip }}" -r 4096 --os-type=linux --os-variant=rhel7 --disk path={{ destdirectory.path }}/{{ master_vm }}.qcow2,device=disk,bus=virtio,format=qcow2 --vcpus=4 --graphics vnc,listen=0.0.0.0 -w bridge=br0  --noautoconsole --import
+  when: not ansible_check_mode
+  ignore_errors: yes 
+
+- name: Autostart
+  shell: |
+          virsh autostart "{{ master_vm }}_{{ environmentname }}_{{ master_mgmt_ip }}"
+  when: not ansible_check_mode
+
+- pause:
+    seconds: 20
+
+

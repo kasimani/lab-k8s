@@ -1,0 +1,13 @@
+---
+- hosts: kvm
+  any_errors_fatal: true
+  gather_facts: no
+
+  become: yes
+  tasks:
+  - name: Destroy Kubernetes
+    shell: |
+           virsh list --name --all | grep {{ environmentname }} | xargs -i virsh destroy {}
+           virsh list --name --all | grep  {{ environmentname }} | xargs -i virsh undefine {}
+           rm -rf "{{ images_path }}/{{ environmentname }}"
+
