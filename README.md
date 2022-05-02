@@ -11,10 +11,15 @@ Step 2: run populate_variables.sh, /bin/sh populate_variables.sh
 Step 3: Run ansible script: 
 
 \# mkdir /kubernetes-install
+
 \# cd /kubernetes-install
+
 \# git clone https://github.com/kasimani/lab-k8s.git
+
 \# cd lab-k8s
+
 \# /bin/sh populate_variables.sh
+
 \# ansible-playbook src/playbook/kubernetesvm_deploy.yml
 
 
