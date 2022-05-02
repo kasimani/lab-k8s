@@ -22,6 +22,8 @@ All Steps:
 \# cd lab-k8s
 
 \# /bin/sh populate_variables.sh
+![image](https://user-images.githubusercontent.com/4587953/166255845-0da96969-d888-44b8-91c8-a33e28a67250.png)
+
 
 \# ansible-playbook src/playbook/kubernetesvm_deploy.yml
 
