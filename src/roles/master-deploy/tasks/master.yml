@@ -6,7 +6,7 @@
 
 - name: Create a temporary copy of the network script for eth0
   template:
-    src: ./src/roles/master-deploy/templates/master_50-cloud-init.yaml
+    src: "{{ playbook_dir }}/../../src/roles/master-deploy/templates/master_50-cloud-init.yaml"
     backup: no
     dest: "{{ destdirectory.path }}/50-cloud-init.yaml"
     force: no
