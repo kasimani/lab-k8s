@@ -25,6 +25,8 @@ All Steps:
 ![image](https://user-images.githubusercontent.com/4587953/166255845-0da96969-d888-44b8-91c8-a33e28a67250.png)
 
 
+
+
 \# ansible-playbook src/playbook/kubernetesvm_deploy.yml
 
 
