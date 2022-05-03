@@ -89,36 +89,36 @@
 #               sudo apt-get install -y kubelet=1.20.1-00 kubeadm=1.20.1-00 kubectl=1.20.1-00
 #               sudo apt-mark hold kubelet kubeadm kubectl
 #######################################################
-     - name: enable proxy for master
-       file:
-         path: "/etc/systemd/system/containerd.service.d"
-         state: directory
-         recurse: yes
-
-     - name: create proxy file
-       file:
-         path: "/etc/systemd/system/containerd.service.d/http_proxy.conf"
-         state: "touch"
-
-     - name: Add conf for containerd
-       blockinfile:
-         path: "/etc/systemd/system/containerd.service.d/http_proxy.conf"
-         block: |
-                [Service]
-                Environment="HTTP_PROXY=http://inban1b-proxy.apac.nsn-net.net:8080"
-                Environment="HTTPS_PROXY=http://inban1b-proxy.apac.nsn-net.net:8080"
-                Environment="NO_PROXY=localhost,127.0.0.1,172.21.166.192/26,10.0.0.0/8"
-
-     - name: Add conf for containerd
-       blockinfile:
-         path: "/etc/environment"
-         block: |
-                no_proxy="localhost,127.0.0.1,172.21.166.192/26,10.0.0.0/8"
-                http_proxy="http://inban1b-proxy.apac.nsn-net.net:8080/"
-                https_proxy="http://inban1b-proxy.apac.nsn-net.net:8080/"
-
-     - name: reload containerd process
-       shell: |
-               sudo systemctl daemon-reload
-               sudo systemctl restart containerd
+#     - name: enable proxy for master
+#       file:
+#         path: "/etc/systemd/system/containerd.service.d"
+#         state: directory
+#         recurse: yes
+#
+#     - name: create proxy file
+#       file:
+#         path: "/etc/systemd/system/containerd.service.d/http_proxy.conf"
+#         state: "touch"
+#
+#     - name: Add conf for containerd
+#       blockinfile:
+#         path: "/etc/systemd/system/containerd.service.d/http_proxy.conf"
+#         block: |
+#                [Service]
+#                Environment="HTTP_PROXY=http://inban1b-proxy.apac.nsn-net.net:8080"
+#                Environment="HTTPS_PROXY=http://inban1b-proxy.apac.nsn-net.net:8080"
+#                Environment="NO_PROXY=localhost,127.0.0.1,172.21.166.192/26,10.0.0.0/8"
+#
+#     - name: Add conf for containerd
+#       blockinfile:
+#         path: "/etc/environment"
+#         block: |
+#                no_proxy="localhost,127.0.0.1,172.21.166.192/26,10.0.0.0/8"
+#                http_proxy="http://inban1b-proxy.apac.nsn-net.net:8080/"
+#                https_proxy="http://inban1b-proxy.apac.nsn-net.net:8080/"
+#
+#     - name: reload containerd process
+#       shell: |
+#               sudo systemctl daemon-reload
+#               sudo systemctl restart containerd
 
