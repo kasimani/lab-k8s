@@ -4,11 +4,16 @@ ansible_user=root
 ansible_ssh_pass=Nokia@123
 
 [masters]
-K8-Master ansible_host=172.21.166.222 ansible_user=root
+K8-Master ansible_host=61.246.174.8 ansible_user=root
 
 [workers]
-K8-worker-1 ansible_host=172.21.166.223 ansible_user=root
-K8-worker-2 ansible_host=172.21.166.224 ansible_user=root
+K8-worker-1 ansible_host=61.246.174.9 ansible_user=root
+K8-worker-2 ansible_host=61.246.174.10 ansible_user=root
 
 [kvm]
-kvm1 ansible_host=172.21.166.244 ansible_user=root
+kvm1 ansible_host=61.246.174.2 ansible_user=root
+
+[kvm:vars]
+ansible_user=labiadmini
+ansible_ssh_private_key_file=/home/labiadmini/.ssh/id_rsa
+ansible_ssh_port=48790

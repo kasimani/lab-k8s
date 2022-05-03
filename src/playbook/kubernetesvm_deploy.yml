@@ -2,6 +2,7 @@
 - hosts: kvm
   any_errors_fatal: true
   gather_facts: no
+  become: yes
   roles:
     - master-deploy
     - worker-deploy
