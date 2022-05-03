@@ -11,7 +11,7 @@ K8-worker-1 ansible_host=61.246.174.9 ansible_user=root
 K8-worker-2 ansible_host=61.246.174.10 ansible_user=root
 
 [kvm]
-kvm1 ansible_host=61.246.174.2 ansible_user=root
+kvm1 ansible_host=61.246.174.2
 
 [kvm:vars]
 ansible_user=labiadmini

@@ -23,6 +23,14 @@
     force: no
   loop: "{{ one_fact }}"
 
+- name: Check if the VM is already running, if running stop and undefine
+  shell: |
+          virsh destroy {{item}}
+          virsh undefine {{item}}
+  ignore_errors: yes
+  loop: "{{ one_fact }}"
+  no_log: true
+
 - name: Preserve hostname
   shell: |
          virt-customize -a "{{ images_path }}/{{ environmentname }}/{{item}}/{{item}}.qcow2"  --run-command "sed -i 's|preserve_hostname: false|preserve_hostname: true|g' /etc/cloud/cloud.cfg"
@@ -45,14 +53,6 @@
 
 - debug:
     var: extact
-
-- name: Check if the VM is already running, if running stop and undefine
-  shell: |
-          virsh destroy {{item}}
-          virsh undefine {{item}}
-  ignore_errors: yes
-  loop: "{{ one_fact }}"
-  no_log: true
 
 - name: Set Worker Hostname
   shell: |

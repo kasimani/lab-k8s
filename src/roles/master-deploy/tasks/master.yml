@@ -17,15 +17,15 @@
     dest: "{{ destdirectory.path }}/{{ master_vm }}.qcow2"
     force: no
 
+- name: Check if the VM is already running, if running stop and undefine
+  shell: |
+          virsh destroy "{{ master_vm }}_{{ environmentname }}_{{ master_mgmt_ip }}"
+          virsh undefine "{{ master_vm }}_{{ environmentname }}_{{ master_mgmt_ip }}"
+  ignore_errors: yes
+
 - name: Preserve hostname
   shell: |
          virt-customize -a "{{ destdirectory.path }}/{{ master_vm }}.qcow2"  --run-command "sed -i 's|preserve_hostname: false|preserve_hostname: true|g' /etc/cloud/cloud.cfg"
-
-- name: Check if the VM is already running, if running stop and undefine
-  shell: |
-          virsh destroy "{{ environmentname }}-{{ master_vm }}-{{ master_mgmt_ip }}"
-          virsh undefine "{{ environmentname }}-{{ master_vm }}-{{ master_mgmt_ip }}"
-  ignore_errors: yes
 
 - name: Get list of partitions (ignoring Errors)
   shell: "guestfish -r -a {{ destdirectory.path }}/{{ master_vm }}.qcow2 run : list-filesystems | grep -Ev '(unknown|swap)'"
