@@ -2,11 +2,11 @@
 environmentname: manish
 worker_node_count: 2
 mgmt_prefix: 26
-mgmt_gateway: 172.21.166.194
-master_mgmt_ip: 172.21.166.222
-dns_server_list: 172.21.166.221
+mgmt_gateway: 192.168.23.194
+master_mgmt_ip: 192.168.23.222
+dns_server_list: 192.168.23.221
 master_vm: kubemaster
-worker_1_mgmt_ip: 172.21.166.223
+worker_1_mgmt_ip: 192.168.23.223
 worker_1_vm: K8_Worker_1
-worker_2_mgmt_ip: 172.21.166.224
+worker_2_mgmt_ip: 192.168.23.224
 worker_2_vm: K8_Worker_2
