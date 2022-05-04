@@ -1,7 +1,7 @@
 [all:vars]
 images_path="/var/lib/libvirt/images"
 ansible_user=root
-ansible_ssh_pass=Nokia@123
+ansible_ssh_pass=May@123
 
 [masters]
 K8-Master ansible_host=192.168.23.8 ansible_user=root
