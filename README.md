@@ -23,7 +23,7 @@ Step 3: Run ansible script
 ## cd lab-k8s
 
 ## /bin/sh populate_variables.sh
- ![image](https://user-images.githubusercontent.com/4587953/166261071-c9d7265f-a0bf-4def-91bc-9d397f7409f4.png)
+ 
 
 
 ## ansible-playbook src/playbook/kubernetesvm_deploy.yml
