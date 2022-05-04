@@ -1,6 +1,6 @@
 Setup will deploy Ubuntu based single Kubernetes master node and Worker nodes [Number of Worker nodes depends on how many you choose, for learning purpose, 2 should be fine]
 
-To deploy this setup, one should have ansible installed and a pre-configured Ubuntu Qcow2 image, same can be downloaded using this link: http://172.21.166.204/master.qcow2
+To deploy this setup, one should have ansible installed and a pre-configured Ubuntu Qcow2 image, same can be downloaded using this link:
 
 G-Drive Link: https://drive.google.com/file/d/18KCd9yJI29DgYoJxOkSrmyHbewBaoPSy/view?usp=sharing
 
