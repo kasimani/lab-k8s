@@ -4,7 +4,7 @@ worker_node_count: 2
 mgmt_prefix: 28
 mgmt_gateway: 61.246.174.14
 master_mgmt_ip: 61.246.174.8
-dns_server_list: 61.246.174.2
+dns_server_list: 8.8.8.8
 master_vm: kubemaster
 worker_1_mgmt_ip: 61.246.174.9
 worker_1_vm: K8_Worker_1
