@@ -9,3 +9,6 @@
 
 - name: Join Wokers Nodes
   import_playbook: join-workers.yml
+
+- name: Install Calico 
+  import_playbook: calico-master.yaml

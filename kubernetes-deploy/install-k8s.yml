@@ -56,39 +56,47 @@
 #                 Acquire::http::Proxy "http://inban1b-proxy.apac.nsn-net.net:8080/";
 #                 Acquire::https::Proxy "http://inban1b-proxy.apac.nsn-net.net:8080/";
 
-     - name: install containerd
-       shell: |
-               apt-get update && apt-get install -y containerd
-               mkdir -p /etc/containerd
-               containerd config default | tee /etc/containerd/config.toml
-               systemctl restart containerd
 
-     - name: disable swap
-       shell: |
-               swapoff -a
-               sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+#### Disabling in my case only, as these steps are already done in Ubuntu Qcow2 images
 
-     - name: install and configure dependencies
-       shell: |
-               apt-get update && apt-get install -y apt-transport-https curl
-               curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-
-     - name: Create kubernetes repo file
-       file:
-         path: "/etc/apt/sources.list.d/kubernetes.list"
-         state: "touch"
-
-     - name: Add K8s Source
-       blockinfile:
-         path: "/etc/apt/sources.list.d/kubernetes.list"
-         block: |
-               deb https://apt.kubernetes.io/ kubernetes-xenial main
-
-     - name: install kubernetes
-       shell: |
-               apt-get update
-               apt-get install -y kubelet=1.20.1-00 kubeadm=1.20.1-00 kubectl=1.20.1-00
-               apt-mark hold kubelet kubeadm kubectl
+#     - name: Kill any running apt process
+#       shell: |
+#              killall apt apt-get
+#       ignore_errors: yes
+#
+#     - name: install containerd
+#       shell: |
+#               apt-get update && apt-get install -y containerd
+#               mkdir -p /etc/containerd
+#               containerd config default | tee /etc/containerd/config.toml
+#               systemctl restart containerd
+##
+#     - name: disable swap
+#       shell: |
+#               swapoff -a
+#               sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+#
+#     - name: install and configure dependencies
+#       shell: |
+#               apt-get update && apt-get install -y apt-transport-https curl
+#               curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+#
+#     - name: Create kubernetes repo file
+#       file:
+#         path: "/etc/apt/sources.list.d/kubernetes.list"
+#         state: "touch"
+#
+#     - name: Add K8s Source
+#       blockinfile:
+#         path: "/etc/apt/sources.list.d/kubernetes.list"
+#         block: |
+#               deb https://apt.kubernetes.io/ kubernetes-xenial main
+#
+#     - name: install kubernetes
+#       shell: |
+#               apt-get update
+#               apt-get install -y kubelet=1.20.1-00 kubeadm=1.20.1-00 kubectl=1.20.1-00
+#               apt-mark hold kubelet kubeadm kubectl
 
 #######################################################
 #     - name: enable proxy for master
